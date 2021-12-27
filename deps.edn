@@ -1,0 +1,12 @@
+{
+ :paths ["src" "resources"]
+
+ :deps {com.datomic/dev-local {:mvn/version "1.0.238"}
+        instaparse/instaparse {:mvn/version "1.4.10"}
+        rhizome/rhizome {:mvn/version "0.2.9"}}
+
+ :aliases {
+           ;;:build         {:deps {io.github.clojure/tools.build {:tag "TAG" :sha "SHA"}}
+           ;;        :ns-default build}
+           }
+ }

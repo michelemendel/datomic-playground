@@ -1,0 +1,527 @@
+queryList ::= ( ( traversalSource ( '.' transactionPart )?
+  | rootTraversal ( '.' traversalTerminalMethod )?
+  | emptyQuery ) ( '.' 'toString' '(' ')' )* ';'? )+ EOF
+emptyQuery ::= EmptyStringLiteral
+traversalSource ::= 'g' ( '.' traversalSourceSelfMethod )? ( '.' traversalSourceSelfMethod )*
+transactionPart ::= 'tx' '(' ')' ( '.' ( 'commit' | 'rollback' ) '(' ')' )?
+rootTraversal ::= traversalSource '.' traversalSourceSpawnMethod ( '.' ( chainedTraversal | chainedParentOfGraphTraversal ) )?
+traversalSourceSelfMethod
+         ::= traversalSourceSelfMethod_withBulk
+           | traversalSourceSelfMethod_withPath
+           | traversalSourceSelfMethod_withSack
+           | traversalSourceSelfMethod_withSideEffect
+           | traversalSourceSelfMethod_withStrategies
+           | traversalSourceSelfMethod_with
+traversalSourceSelfMethod_withBulk ::= 'withBulk' '(' booleanLiteral ')'
+traversalSourceSelfMethod_withPath ::= 'withPath' '(' ')'
+traversalSourceSelfMethod_withSack ::= 'withSack' '(' genericLiteral ( ',' traversalOperator )? ')'
+traversalSourceSelfMethod_withSideEffect ::= 'withSideEffect' '(' stringLiteral ',' genericLiteral ')'
+traversalSourceSelfMethod_withStrategies ::= 'withStrategies' '(' traversalStrategy ( ',' traversalStrategyList )? ')'
+traversalSourceSelfMethod_with ::= 'with' '(' stringLiteral ( ',' genericLiteral )? ')'
+traversalSourceSpawnMethod ::= traversalSourceSpawnMethod_addE
+           | traversalSourceSpawnMethod_addV
+           | traversalSourceSpawnMethod_E
+           | traversalSourceSpawnMethod_V
+           | traversalSourceSpawnMethod_inject
+           | traversalSourceSpawnMethod_io
+traversalSourceSpawnMethod_addE ::= 'addE' '(' ( stringLiteral | nestedTraversal ) ')'
+traversalSourceSpawnMethod_addV ::= 'addV' '(' ( stringLiteral | nestedTraversal )? ')'
+traversalSourceSpawnMethod_E ::= 'E' '(' genericLiteralList ')'
+traversalSourceSpawnMethod_V ::= 'V' '(' genericLiteralList ')'
+traversalSourceSpawnMethod_inject ::= 'inject' '(' genericLiteralList ')'
+traversalSourceSpawnMethod_io ::= 'io' '(' stringLiteral ')'
+chainedTraversal ::= traversalMethod ( '.' ( traversalMethod | chainedParentOfGraphTraversal ) )*
+chainedParentOfGraphTraversal ::= traversalSelfMethod ( '.' traversalSelfMethod )*
+nestedTraversal ::= rootTraversal | ( '__' '.' )? chainedTraversal
+terminatedTraversal ::= rootTraversal '.' traversalTerminalMethod
+traversalMethod ::= traversalMethod_V
+           | traversalMethod_addE
+           | traversalMethod_addV
+           | traversalMethod_aggregate
+           | traversalMethod_and
+           | traversalMethod_as
+           | traversalMethod_barrier
+           | traversalMethod_both
+           | traversalMethod_bothE
+           | traversalMethod_bothV
+           | traversalMethod_branch
+           | traversalMethod_by
+           | traversalMethod_cap
+           | traversalMethod_choose
+           | traversalMethod_coalesce
+           | traversalMethod_coin
+           | traversalMethod_connectedComponent
+           | traversalMethod_constant
+           | traversalMethod_count
+           | traversalMethod_cyclicPath
+           | traversalMethod_dedup
+           | traversalMethod_drop
+           | traversalMethod_elementMap
+           | traversalMethod_emit
+           | traversalMethod_filter
+           | traversalMethod_flatMap
+           | traversalMethod_fold
+           | traversalMethod_from
+           | traversalMethod_group
+           | traversalMethod_groupCount
+           | traversalMethod_has
+           | traversalMethod_hasId
+           | traversalMethod_hasKey
+           | traversalMethod_hasLabel
+           | traversalMethod_hasNot
+           | traversalMethod_hasValue
+           | traversalMethod_id
+           | traversalMethod_identity
+           | traversalMethod_in
+           | traversalMethod_inE
+           | traversalMethod_inV
+           | traversalMethod_index
+           | traversalMethod_inject
+           | traversalMethod_is
+           | traversalMethod_key
+           | traversalMethod_label
+           | traversalMethod_limit
+           | traversalMethod_local
+           | traversalMethod_loops
+           | traversalMethod_map
+           | traversalMethod_match
+           | traversalMethod_math
+           | traversalMethod_max
+           | traversalMethod_mean
+           | traversalMethod_min
+           | traversalMethod_not
+           | traversalMethod_option
+           | traversalMethod_optional
+           | traversalMethod_or
+           | traversalMethod_order
+           | traversalMethod_otherV
+           | traversalMethod_out
+           | traversalMethod_outE
+           | traversalMethod_outV
+           | traversalMethod_pageRank
+           | traversalMethod_path
+           | traversalMethod_peerPressure
+           | traversalMethod_profile
+           | traversalMethod_project
+           | traversalMethod_properties
+           | traversalMethod_property
+           | traversalMethod_propertyMap
+           | traversalMethod_range
+           | traversalMethod_read
+           | traversalMethod_repeat
+           | traversalMethod_sack
+           | traversalMethod_sample
+           | traversalMethod_select
+           | traversalMethod_shortestPath
+           | traversalMethod_sideEffect
+           | traversalMethod_simplePath
+           | traversalMethod_skip
+           | traversalMethod_store
+           | traversalMethod_subgraph
+           | traversalMethod_sum
+           | traversalMethod_tail
+           | traversalMethod_fail
+           | traversalMethod_timeLimit
+           | traversalMethod_times
+           | traversalMethod_to
+           | traversalMethod_toE
+           | traversalMethod_toV
+           | traversalMethod_tree
+           | traversalMethod_unfold
+           | traversalMethod_union
+           | traversalMethod_until
+           | traversalMethod_value
+           | traversalMethod_valueMap
+           | traversalMethod_values
+           | traversalMethod_where
+           | traversalMethod_with
+           | traversalMethod_write
+traversalMethod_V ::= 'V' '(' genericLiteralList ')'
+traversalMethod_addE ::= 'addE' '(' ( stringLiteral | nestedTraversal ) ')'
+traversalMethod_addV ::= 'addV' '(' ( stringLiteral | nestedTraversal )? ')'
+traversalMethod_aggregate ::= 'aggregate' '(' ( traversalScope ',' )? stringLiteral ')'
+traversalMethod_and ::= 'and' '(' nestedTraversalList ')'
+traversalMethod_as ::= 'as' '(' stringLiteral ( ',' stringLiteralList )? ')'
+traversalMethod_barrier ::= 'barrier' '(' ( traversalSackMethod | integerLiteral )? ')'
+traversalMethod_both ::= 'both' '(' stringLiteralList ')'
+traversalMethod_bothE ::= 'bothE' '(' stringLiteralList ')'
+traversalMethod_bothV ::= 'bothV' '(' ')'
+traversalMethod_branch ::= 'branch' '(' nestedTraversal ')'
+traversalMethod_by ::= 'by' '(' ( traversalComparator | traversalOrder | traversalToken | ( traversalFunction | stringLiteral | nestedTraversal ) ( ',' traversalComparator )? )? ')'
+traversalMethod_cap ::= 'cap' '(' stringLiteral ( ',' stringLiteralList )? ')'
+traversalMethod_choose ::= 'choose' '(' ( traversalFunction | ( ( traversalPredicate | nestedTraversal ) ',' ( nestedTraversal ',' )? )? nestedTraversal ) ')'
+traversalMethod_coalesce ::= 'coalesce' '(' nestedTraversalList ')'
+traversalMethod_coin ::= 'coin' '(' floatLiteral ')'
+traversalMethod_connectedComponent ::= 'connectedComponent' '(' ')'
+traversalMethod_constant ::= 'constant' '(' genericLiteral ')'
+traversalMethod_count ::= 'count' '(' traversalScope? ')'
+traversalMethod_cyclicPath ::= 'cyclicPath' '(' ')'
+traversalMethod_dedup ::= 'dedup' '(' ( traversalScope ( ',' stringLiteralList )? | stringLiteralList ) ')'
+traversalMethod_drop ::= 'drop' '(' ')'
+traversalMethod_elementMap ::= 'elementMap' '(' stringLiteralList ')'
+traversalMethod_emit ::= 'emit' '(' ( traversalPredicate | nestedTraversal )? ')'
+traversalMethod_filter ::= 'filter' '(' ( traversalPredicate | nestedTraversal ) ')'
+traversalMethod_flatMap ::= 'flatMap' '(' nestedTraversal ')'
+traversalMethod_fold ::= 'fold' '(' ( genericLiteral ',' traversalBiFunction )? ')'
+traversalMethod_from ::= 'from' '(' ( stringLiteral | nestedTraversal ) ')'
+traversalMethod_group ::= 'group' '(' stringLiteral? ')'
+traversalMethod_groupCount ::= 'groupCount' '(' stringLiteral? ')'
+traversalMethod_has ::= 'has' '(' ( stringLiteral ( ',' ( ( stringLiteral ',' )? ( genericLiteral | traversalPredicate ) | nestedTraversal ) )? | traversalToken ',' ( genericLiteral | traversalPredicate | nestedTraversal ) ) ')'
+traversalMethod_hasId ::= 'hasId' '(' ( genericLiteral ( ',' genericLiteralList )? | traversalPredicate ) ')'
+traversalMethod_hasKey ::= 'hasKey' '(' ( traversalPredicate | stringLiteral ( ',' stringLiteralList )? ) ')'
+traversalMethod_hasLabel ::= 'hasLabel' '(' ( traversalPredicate | stringLiteral ( ',' stringLiteralList )? ) ')'
+traversalMethod_hasNot ::= 'hasNot' '(' stringLiteral ')'
+traversalMethod_hasValue ::= 'hasValue' '(' ( genericLiteral ( ',' genericLiteralList )? | traversalPredicate ) ')'
+traversalMethod_id ::= 'id' '(' ')'
+traversalMethod_identity ::= 'identity' '(' ')'
+traversalMethod_in ::= 'in' '(' stringLiteralList ')'
+traversalMethod_inE ::= 'inE' '(' stringLiteralList ')'
+traversalMethod_inV ::= 'inV' '(' ')'
+traversalMethod_index ::= 'index' '(' ')'
+traversalMethod_inject ::= 'inject' '(' genericLiteralList ')'
+traversalMethod_is ::= 'is' '(' ( genericLiteral | traversalPredicate ) ')'
+traversalMethod_key ::= 'key' '(' ')'
+traversalMethod_label ::= 'label' '(' ')'
+traversalMethod_limit ::= 'limit' '(' ( traversalScope ',' )? integerLiteral ')'
+traversalMethod_local ::= 'local' '(' nestedTraversal ')'
+traversalMethod_loops ::= 'loops' '(' stringLiteral? ')'
+traversalMethod_map ::= 'map' '(' nestedTraversal ')'
+traversalMethod_match ::= 'match' '(' nestedTraversalList ')'
+traversalMethod_math ::= 'math' '(' stringLiteral ')'
+traversalMethod_max ::= 'max' '(' traversalScope? ')'
+traversalMethod_mean ::= 'mean' '(' traversalScope? ')'
+traversalMethod_min ::= 'min' '(' traversalScope? ')'
+traversalMethod_not ::= 'not' '(' nestedTraversal ')'
+traversalMethod_option ::= 'option' '(' ( ( traversalPredicate | genericLiteral ) ',' )? nestedTraversal ')'
+traversalMethod_optional ::= 'optional' '(' nestedTraversal ')'
+traversalMethod_or ::= 'or' '(' nestedTraversalList ')'
+traversalMethod_order ::= 'order' '(' traversalScope? ')'
+traversalMethod_otherV ::= 'otherV' '(' ')'
+traversalMethod_out ::= 'out' '(' stringLiteralList ')'
+traversalMethod_outE ::= 'outE' '(' stringLiteralList ')'
+traversalMethod_outV ::= 'outV' '(' ')'
+traversalMethod_pageRank ::= 'pageRank' '(' floatLiteral? ')'
+traversalMethod_path ::= 'path' '(' ')'
+traversalMethod_peerPressure ::= 'peerPressure' '(' ')'
+traversalMethod_profile ::= 'profile' '(' stringLiteral? ')'
+traversalMethod_project ::= 'project' '(' stringLiteral ( ',' stringLiteralList )? ')'
+traversalMethod_properties ::= 'properties' '(' stringLiteralList ')'
+traversalMethod_property ::= 'property' '(' ( traversalCardinality ',' )? genericLiteral ',' genericLiteral ( ',' genericLiteralList )? ')'
+traversalMethod_propertyMap ::= 'propertyMap' '(' stringLiteralList ')'
+traversalMethod_range ::= 'range' '(' ( traversalScope ',' )? integerLiteral ',' integerLiteral ')'
+traversalMethod_read ::= 'read' '(' ')'
+traversalMethod_repeat ::= 'repeat' '(' ( stringLiteral ',' )? nestedTraversal ')'
+traversalMethod_sack ::= 'sack' '(' traversalBiFunction? ')'
+traversalMethod_sample ::= 'sample' '(' ( traversalScope ',' )? integerLiteral ')'
+traversalMethod_select ::= 'select' '(' ( traversalColumn | ( traversalPop ',' )? ( stringLiteral ( ',' stringLiteral ( ',' stringLiteralList )? )? | nestedTraversal ) ) ')'
+traversalMethod_shortestPath ::= 'shortestPath' '(' ')'
+traversalMethod_sideEffect ::= 'sideEffect' '(' nestedTraversal ')'
+traversalMethod_simplePath ::= 'simplePath' '(' ')'
+traversalMethod_skip ::= 'skip' '(' ( traversalScope ',' )? integerLiteral ')'
+traversalMethod_store ::= 'store' '(' stringLiteral ')'
+traversalMethod_subgraph ::= 'subgraph' '(' stringLiteral ')'
+traversalMethod_sum ::= 'sum' '(' traversalScope? ')'
+traversalMethod_tail ::= 'tail' '(' ( integerLiteral | traversalScope ( ',' integerLiteral )? )? ')'
+traversalMethod_fail ::= 'fail' '(' stringLiteral? ')'
+traversalMethod_timeLimit ::= 'timeLimit' '(' integerLiteral ')'
+traversalMethod_times ::= 'times' '(' integerLiteral ')'
+traversalMethod_to ::= 'to' '(' ( traversalDirection ( ',' stringLiteralList )? | stringLiteral | nestedTraversal ) ')'
+traversalMethod_toE ::= 'toE' '(' traversalDirection ( ',' stringLiteralList )? ')'
+traversalMethod_toV ::= 'toV' '(' traversalDirection ')'
+traversalMethod_tree ::= 'tree' '(' stringLiteral? ')'
+traversalMethod_unfold ::= 'unfold' '(' ')'
+traversalMethod_union ::= 'union' '(' nestedTraversalList ')'
+traversalMethod_until ::= 'until' '(' ( traversalPredicate | nestedTraversal ) ')'
+traversalMethod_value ::= 'value' '(' ')'
+traversalMethod_valueMap ::= 'valueMap' '(' ( stringLiteralList | booleanLiteral ( ',' stringLiteralList )? ) ')'
+traversalMethod_values ::= 'values' '(' stringLiteralList ')'
+traversalMethod_where ::= 'where' '(' ( ( stringLiteral ',' )? traversalPredicate | nestedTraversal ) ')'
+traversalMethod_with ::= 'with' '(' stringLiteral ( ',' genericLiteral )? ')'
+traversalMethod_write ::= 'write' '(' ')'
+traversalStrategy ::= 'new' ( 'PartitionStrategy' '(' traversalStrategyArgs_PartitionStrategy? ( ',' traversalStrategyArgs_PartitionStrategy )* | 'SeedStrategy' '(' 'seed' ':' integerLiteral | 'SubgraphStrategy' '(' traversalStrategyArgs_SubgraphStrategy? ( ',' traversalStrategyArgs_SubgraphStrategy )* | 'EdgeLabelVerificationStrategy' '(' traversalStrategyArgs_EdgeLabelVerificationStrategy? ( ',' traversalStrategyArgs_EdgeLabelVerificationStrategy )* | 'ReservedKeysVerificationStrategy' '(' traversalStrategyArgs_ReservedKeysVerificationStrategy? ( ',' traversalStrategyArgs_ReservedKeysVerificationStrategy )* ) ')'
+           | 'new'? 'ProductiveByStrategy' ( '(' traversalStrategyArgs_ProductiveByStrategy? ')' )?
+           | 'ReadOnlyStrategy'
+traversalStrategyArgs_ProductiveByStrategy ::= 'productiveKeys' ':' stringLiteralList
+traversalStrategyArgs_PartitionStrategy ::= 'includeMetaProperties' ':' booleanLiteral
+           | ( 'writePartition' | 'partitionKey' ) ':' stringLiteral
+           | 'readPartitions' ':' stringLiteralList
+traversalStrategyArgs_SubgraphStrategy ::= ( 'vertices' | 'edges' | 'vertexProperties' ) ':' nestedTraversal
+           | 'checkAdjacentVertices' ':' booleanLiteral
+traversalStrategyArgs_EdgeLabelVerificationStrategy ::= ( 'throwException' | 'logWarning' ) ':' booleanLiteral
+traversalStrategyArgs_ReservedKeysVerificationStrategy ::= 'keys' ':' stringLiteralList
+           | ( 'throwException' | 'logWarning' ) ':' booleanLiteral
+traversalScope ::= 'local'
+           | 'Scope.local'
+           | 'global'
+           | 'Scope.global'
+traversalToken ::= 'id'
+           | 'T.id'
+           | 'label'
+           | 'T.label'
+           | 'key'
+           | 'T.key'
+           | 'value'
+           | 'T.value'
+traversalOrder ::= 'incr'
+           | 'Order.incr'
+           | 'decr'
+           | 'Order.decr'
+           | 'asc'
+           | 'Order.asc'
+           | 'desc'
+           | 'Order.desc'
+           | 'shuffle'
+           | 'Order.shuffle'
+traversalDirection ::= 'IN'
+           | 'Direction.IN'
+           | 'OUT'
+           | 'Direction.OUT'
+           | 'BOTH'
+           | 'Direction.BOTH'
+traversalCardinality ::= 'single'
+           | 'Cardinality.single'
+           | 'set'
+           | 'Cardinality.set'
+           | 'list'
+           | 'Cardinality.list'
+traversalColumn ::= 'keys'
+           | 'Column.keys'
+           | 'values'
+           | 'Column.values'
+traversalPop ::= 'first'
+           | 'Pop.first'
+           | 'last'
+           | 'Pop.last'
+           | 'all'
+           | 'Pop.all'
+           | 'mixed'
+           | 'Pop.mixed'
+traversalOperator ::= 'addAll'
+           | 'Operator.addAll'
+           | 'and'
+           | 'Operator.and'
+           | 'assign'
+           | 'Operator.assign'
+           | 'div'
+           | 'Operator.div'
+           | 'max'
+           | 'Operator.max'
+           | 'min'
+           | 'Operator.min'
+           | 'minus'
+           | 'Operator.minus'
+           | 'mult'
+           | 'Operator.mult'
+           | 'or'
+           | 'Operator.or'
+           | 'sum'
+           | 'Operator.sum'
+           | 'sumLong'
+           | 'Operator.sumLong'
+traversalOptionParent ::= 'any'
+           | 'Pick.any'
+           | 'none'
+           | 'Pick.none'
+traversalPredicate ::= traversalPredicate_eq
+           | traversalPredicate_neq
+           | traversalPredicate_lt
+           | traversalPredicate_lte
+           | traversalPredicate_gt
+           | traversalPredicate_gte
+           | traversalPredicate_inside
+           | traversalPredicate_outside
+           | traversalPredicate_between
+           | traversalPredicate_within
+           | traversalPredicate_without
+           | traversalPredicate_not
+           | traversalPredicate_startingWith
+           | traversalPredicate_notStartingWith
+           | traversalPredicate_endingWith
+           | traversalPredicate_notEndingWith
+           | traversalPredicate_containing
+           | traversalPredicate_notContaining
+           | traversalPredicate '.' ( ( 'and' | 'or' ) '(' traversalPredicate | 'negate' '(' ) ')'
+traversalTerminalMethod ::= traversalTerminalMethod_explain
+           | traversalTerminalMethod_iterate
+           | traversalTerminalMethod_hasNext
+           | traversalTerminalMethod_tryNext
+           | traversalTerminalMethod_next
+           | traversalTerminalMethod_toList
+           | traversalTerminalMethod_toSet
+           | traversalTerminalMethod_toBulkSet
+traversalSackMethod ::= 'normSack'
+           | 'Barrier.normSack'
+traversalSelfMethod ::= traversalSelfMethod_none
+traversalComparator ::= traversalOrder
+traversalFunction ::= traversalToken
+           | traversalColumn
+traversalBiFunction ::= traversalOperator
+traversalPredicate_eq ::= ( 'P.eq' | 'eq' ) '(' genericLiteral ')'
+traversalPredicate_neq ::= ( 'P.neq' | 'neq' ) '(' genericLiteral ')'
+traversalPredicate_lt ::= ( 'P.lt' | 'lt' ) '(' genericLiteral ')'
+traversalPredicate_lte ::= ( 'P.lte' | 'lte' ) '(' genericLiteral ')'
+traversalPredicate_gt ::= ( 'P.gt' | 'gt' ) '(' genericLiteral ')'
+traversalPredicate_gte ::= ( 'P.gte' | 'gte' ) '(' genericLiteral ')'
+traversalPredicate_inside ::= ( 'P.inside' | 'inside' ) '(' genericLiteral ',' genericLiteral ')'
+traversalPredicate_outside ::= ( 'P.outside' | 'outside' ) '(' genericLiteral ',' genericLiteral ')'
+traversalPredicate_between ::= ( 'P.between' | 'between' ) '(' genericLiteral ',' genericLiteral ')'
+traversalPredicate_within ::= ( 'P.within' | 'within' ) '(' genericLiteralList? ')'
+traversalPredicate_without ::= ( 'P.without' | 'without' ) '(' genericLiteralList? ')'
+traversalPredicate_not ::= ( 'P.not' | 'not' ) '(' traversalPredicate ')'
+traversalPredicate_containing ::= ( 'TextP.containing' | 'containing' ) '(' stringLiteral ')'
+traversalPredicate_notContaining ::= ( 'TextP.notContaining' | 'notContaining' ) '(' stringLiteral ')'
+traversalPredicate_startingWith ::= ( 'TextP.startingWith' | 'startingWith' ) '(' stringLiteral ')'
+traversalPredicate_notStartingWith ::= ( 'TextP.notStartingWith' | 'notStartingWith' ) '(' stringLiteral ')'
+traversalPredicate_endingWith ::= ( 'TextP.endingWith' | 'endingWith' ) '(' stringLiteral ')'
+traversalPredicate_notEndingWith ::= ( 'TextP.notEndingWith' | 'notEndingWith' ) '(' stringLiteral ')'
+traversalTerminalMethod_explain ::= 'explain' '(' ')'
+traversalTerminalMethod_hasNext ::= 'hasNext' '(' ')'
+traversalTerminalMethod_iterate ::= 'iterate' '(' ')'
+traversalTerminalMethod_tryNext ::= 'tryNext' '(' ')'
+traversalTerminalMethod_next ::= 'next' '(' integerLiteral? ')'
+traversalTerminalMethod_toList ::= 'toList' '(' ')'
+traversalTerminalMethod_toSet ::= 'toSet' '(' ')'
+traversalTerminalMethod_toBulkSet ::= 'toBulkSet' '(' ')'
+traversalSelfMethod_none ::= 'none' '(' ')'
+gremlinStringConstants ::= withOptionsStringConstants
+           | shortestPathStringConstants
+           | connectedComponentConstants
+           | pageRankStringConstants
+           | peerPressureStringConstants
+           | ioOptionsStringConstants
+connectedComponentConstants ::= gremlinStringConstants_connectedComponentStringConstants_component
+           | gremlinStringConstants_connectedComponentStringConstants_edges
+           | gremlinStringConstants_connectedComponentStringConstants_propertyName
+pageRankStringConstants ::= gremlinStringConstants_pageRankStringConstants_edges
+           | gremlinStringConstants_pageRankStringConstants_times
+           | gremlinStringConstants_pageRankStringConstants_propertyName
+peerPressureStringConstants ::= gremlinStringConstants_peerPressureStringConstants_edges
+           | gremlinStringConstants_peerPressureStringConstants_times
+           | gremlinStringConstants_peerPressureStringConstants_propertyName
+shortestPathStringConstants ::= gremlinStringConstants_shortestPathStringConstants_target
+           | gremlinStringConstants_shortestPathStringConstants_edges
+           | gremlinStringConstants_shortestPathStringConstants_distance
+           | gremlinStringConstants_shortestPathStringConstants_maxDistance
+           | gremlinStringConstants_shortestPathStringConstants_includeEdges
+withOptionsStringConstants ::= gremlinStringConstants_withOptionsStringConstants_tokens
+           | gremlinStringConstants_withOptionsStringConstants_none
+           | gremlinStringConstants_withOptionsStringConstants_ids
+           | gremlinStringConstants_withOptionsStringConstants_labels
+           | gremlinStringConstants_withOptionsStringConstants_keys
+           | gremlinStringConstants_withOptionsStringConstants_values
+           | gremlinStringConstants_withOptionsStringConstants_all
+           | gremlinStringConstants_withOptionsStringConstants_indexer
+           | gremlinStringConstants_withOptionsStringConstants_list
+           | gremlinStringConstants_withOptionsStringConstants_map
+ioOptionsStringConstants ::= gremlinStringConstants_ioOptionsStringConstants_reader
+           | gremlinStringConstants_ioOptionsStringConstants_writer
+           | gremlinStringConstants_ioOptionsStringConstants_gryo
+           | gremlinStringConstants_ioOptionsStringConstants_graphson
+           | gremlinStringConstants_ioOptionsStringConstants_graphml
+gremlinStringConstants_connectedComponentStringConstants_component ::= 'ConnectedComponent' '.' 'component'
+gremlinStringConstants_connectedComponentStringConstants_edges ::= 'ConnectedComponent' '.' 'edges'
+gremlinStringConstants_connectedComponentStringConstants_propertyName ::= 'ConnectedComponent' '.' 'propertyName'
+gremlinStringConstants_pageRankStringConstants_edges ::= 'PageRank' '.' 'edges'
+gremlinStringConstants_pageRankStringConstants_times ::= 'PageRank' '.' 'times'
+gremlinStringConstants_pageRankStringConstants_propertyName ::= 'PageRank' '.' 'propertyName'
+gremlinStringConstants_peerPressureStringConstants_edges ::= 'PeerPressure' '.' 'edges'
+gremlinStringConstants_peerPressureStringConstants_times ::= 'PeerPressure' '.' 'times'
+gremlinStringConstants_peerPressureStringConstants_propertyName ::= 'PeerPressure' '.' 'propertyName'
+gremlinStringConstants_shortestPathStringConstants_target ::= 'ShortestPath' '.' 'target'
+gremlinStringConstants_shortestPathStringConstants_edges ::= 'ShortestPath' '.' 'edges'
+gremlinStringConstants_shortestPathStringConstants_distance ::= 'ShortestPath' '.' 'distance'
+gremlinStringConstants_shortestPathStringConstants_maxDistance ::= 'ShortestPath' '.' 'maxDistance'
+gremlinStringConstants_shortestPathStringConstants_includeEdges ::= 'ShortestPath' '.' 'includeEdges'
+gremlinStringConstants_withOptionsStringConstants_tokens ::= 'WithOptions' '.' 'tokens'
+gremlinStringConstants_withOptionsStringConstants_none ::= 'WithOptions' '.' 'none'
+gremlinStringConstants_withOptionsStringConstants_ids ::= 'WithOptions' '.' 'ids'
+gremlinStringConstants_withOptionsStringConstants_labels ::= 'WithOptions' '.' 'labels'
+gremlinStringConstants_withOptionsStringConstants_keys ::= 'WithOptions' '.' 'keys'
+gremlinStringConstants_withOptionsStringConstants_values ::= 'WithOptions' '.' 'values'
+gremlinStringConstants_withOptionsStringConstants_all ::= 'WithOptions' '.' 'all'
+gremlinStringConstants_withOptionsStringConstants_indexer ::= 'WithOptions' '.' 'indexer'
+gremlinStringConstants_withOptionsStringConstants_list ::= 'WithOptions' '.' 'list'
+gremlinStringConstants_withOptionsStringConstants_map ::= 'WithOptions' '.' 'map'
+gremlinStringConstants_ioOptionsStringConstants_reader ::= 'IO' '.' 'reader'
+gremlinStringConstants_ioOptionsStringConstants_writer ::= 'IO' '.' 'writer'
+gremlinStringConstants_ioOptionsStringConstants_gryo ::= 'IO' '.' 'gryo'
+gremlinStringConstants_ioOptionsStringConstants_graphson ::= 'IO' '.' 'graphson'
+gremlinStringConstants_ioOptionsStringConstants_graphml ::= 'IO' '.' 'graphml'
+traversalStrategyList ::= traversalStrategyExpr?
+traversalStrategyExpr ::= traversalStrategy ( ',' traversalStrategy )*
+nestedTraversalList ::= nestedTraversalExpr?
+nestedTraversalExpr ::= nestedTraversal ( ',' nestedTraversal )*
+genericLiteralList ::= genericLiteralExpr?
+genericLiteralExpr ::= genericLiteral ( ',' genericLiteral )*
+genericLiteralRange ::= integerLiteral '.' '.' integerLiteral
+           | stringLiteral '.' '.' stringLiteral
+genericLiteralCollection ::= '[' ( genericLiteral ( ',' genericLiteral )* )? ']'
+stringLiteralList ::= ( stringLiteralExpr | '[' stringLiteralExpr? ']' )?
+stringLiteralExpr ::= stringLiteral ( ',' stringLiteral )*
+genericLiteral ::= integerLiteral
+           | floatLiteral
+           | booleanLiteral
+           | stringLiteral
+           | dateLiteral
+           | 'null'
+           | traversalToken
+           | traversalCardinality
+           | traversalDirection
+           | traversalOptionParent
+           | genericLiteralCollection
+           | genericLiteralRange
+           | nestedTraversal
+           | terminatedTraversal
+           | genericLiteralMap
+genericLiteralMap ::= '[' genericLiteral? ':' genericLiteral? ( ',' genericLiteral? ':' genericLiteral? )* ']'
+integerLiteral ::= IntegerLiteral
+floatLiteral ::= FloatingPointLiteral
+booleanLiteral ::= BooleanLiteral
+stringLiteral ::= NonEmptyStringLiteral | EmptyStringLiteral | 'null' | gremlinStringConstants
+dateLiteral ::= 'datetime' '(' stringLiteral ')'
+_ ::= WS | LINE_COMMENT
+IntegerLiteral ::= Sign? ( DecimalIntegerLiteral | HexIntegerLiteral | OctalIntegerLiteral )
+DecimalIntegerLiteral ::= DecimalNumeral IntegerTypeSuffix?
+HexIntegerLiteral ::= HexNumeral IntegerTypeSuffix?
+OctalIntegerLiteral ::= OctalNumeral IntegerTypeSuffix?
+IntegerTypeSuffix ::= [bBsSnNiIlL]
+DecimalNumeral ::= '0' | NonZeroDigit ( Underscores? Digits )?
+Digits ::= Digit ( DigitsAndUnderscores? Digit )?
+Digit ::= '0' | NonZeroDigit
+NonZeroDigit ::= [1-9]
+DigitsAndUnderscores ::= DigitOrUnderscore+
+DigitOrUnderscore ::= Digit | '_'
+Underscores ::= '_'+
+HexNumeral ::= '0' [xX] HexDigits
+HexDigits ::= HexDigit ( HexDigitsAndUnderscores? HexDigit )?
+HexDigit ::= [0-9a-fA-F]
+HexDigitsAndUnderscores ::= HexDigitOrUnderscore+
+HexDigitOrUnderscore ::= HexDigit | '_'
+OctalNumeral ::= '0' Underscores? OctalDigits
+OctalDigits ::= OctalDigit ( OctalDigitsAndUnderscores? OctalDigit )?
+OctalDigit ::= [0-7]
+OctalDigitsAndUnderscores ::= OctalDigitOrUnderscore+
+OctalDigitOrUnderscore ::= OctalDigit | '_'
+FloatingPointLiteral ::= Sign? DecimalFloatingPointLiteral
+DecimalFloatingPointLiteral ::= Digits ( ( '.' Digits ExponentPart? | ExponentPart ) FloatTypeSuffix? | FloatTypeSuffix )
+ExponentPart ::= ExponentIndicator SignedInteger
+ExponentIndicator ::= [eE]
+SignedInteger ::= Sign? Digits
+Sign ::= ['+' '-' ]
+FloatTypeSuffix ::= [fFdDmM]
+BooleanLiteral ::= 'true' | 'false'
+NonEmptyStringLiteral ::= '"' DoubleQuotedStringCharacters '"' | "'" SingleQuotedStringCharacters "'"
+EmptyStringLiteral ::= '""' | "''"
+DoubleQuotedStringCharacters ::= DoubleQuotedStringCharacter+
+DoubleQuotedStringCharacter ::= [^"] | JoinLineEscape | EscapeSequence
+SingleQuotedStringCharacters ::= SingleQuotedStringCharacter+
+SingleQuotedStringCharacter ::= [^'] | JoinLineEscape | EscapeSequence
+JoinLineEscape ::= '\\' #'\r?\n'
+EscapeSequence ::= '\\' #'[btnfr\\]' | OctalEscape | UnicodeEscape
+OctalEscape ::= '\\' ( ZeroToThree? OctalDigit )? OctalDigit
+ZeroToThree ::= [0-3]
+UnicodeEscape ::= '\\' #'u+' HexDigit HexDigit HexDigit HexDigit
+WS ::= '\\s+'
+LINE_COMMENT ::= '//' #'[^\r\n]*'
+EOF ::= $
+
